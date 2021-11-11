@@ -1,0 +1,7 @@
+name: RaidTimers
+version: 0.0.1
+main: com.cloth.RaidTimersPlugin
+commands:
+  raid:
+    description: Opens the Raid gui.
+    aliases: [rt, raids]

@@ -1,0 +1,67 @@
+####################################################
+#                                                  #
+#                 General Settings                 #
+#                                                  #
+####################################################
+
+# If you start a raid, and stop shooting for 'x minutes or hours' then,
+# the defending faction will receive a shield.
+explosion-threshold: 15 minute
+
+# This is how long the shield will last after a faction
+# has successfully defended a raid.
+shield-duration: 15 minutes
+
+# Prevent the placement of the following blocks during raid defense.
+prevent-placement:
+- TNT
+- OBSIDIAN
+- COBBLESTONE
+
+# Prevent the destruction of the following blocks during raid defense.
+prevent-break:
+- MOB_SPAWNER
+
+# Prevent the use of the following items during raid defense.
+# Note: Here you should place the item type of your genbuckets.
+prevent-use:
+- MONSTER_EGG
+- BUCKET
+
+# Prevent the use of certain commands (by the defenders) during raid.
+prevent-commands: []
+
+####################################################
+#                                                  #
+#                     Messages                     #
+#                                                  #
+####################################################
+
+cannot-break: '&eYou cannot break this block while being raided.'
+cannot-place: '&eYou cannot place this in your claims while being raided.'
+cannot-use: '&eYou cannot use this item while being raided.'
+
+
+#         Raid Start          #
+
+raid-start-title: '&cRaid Started'
+raid-start-subtitle: '&cYour faction has initiated a raid on %faction%'
+
+raid-start:
+- ''
+- '&cYou have initiated a raid on: &f%faction% &7(%online% Online)'
+- ''
+- '&cYou may type &f/raid&c for additional information.'
+- ''
+
+#         Raid Defense         #
+
+raid-defense-title: '&cRaid Defense'
+raid-defense-subtitle: '&cYou are being raided, go defend your base!'
+
+raid-defense:
+  - ''
+  - '&cYou are being raided by: &f%faction% &7(%online% Online)'
+  - ''
+  - '&cYou may type &f/raid&c for additional information.'
+  - ''
