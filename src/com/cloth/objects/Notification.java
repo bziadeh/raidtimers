@@ -2,6 +2,7 @@ package com.cloth.objects;
 
 import com.massivecraft.factions.Faction;
 import org.bukkit.entity.Player;
+import xyz.tozymc.spigot.api.title.TitleApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class Notification {
     }
 
     public void send(Player player) {
-        new Title(title, subtitle).send(player);
+        TitleApi.sendTitle(player, title, subtitle, 10, 20, 10);
         messages.forEach(player::sendMessage);
     }
 }

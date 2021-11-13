@@ -71,9 +71,16 @@ public class RaidApi {
      */
     private void loadConfig() {
         ConfigurationSection raids = config.getConfigurationSection("raids");
+
+        if(raids == null)
+            return;
+
         for(String attackerId : raids.getKeys(false)) {
-            String defenderId = config.getString("raids." + attackerId + ".attacking");
-            long lastExplosion = config.getLong("raids." + attackerId + ".lastExplosion");
+            final String path = "raids." + attackerId;
+
+            String defenderId = config.getString(path + ".raiding");
+            long lastExplosion = config.getLong(path + ".lastExplosion");
+
             contextList.add(new RaidContext(attackerId, defenderId, lastExplosion));
         }
     }
@@ -109,8 +116,8 @@ public class RaidApi {
     private void saveToConfig(RaidContext raid) {
         Bukkit.getScheduler().runTaskAsynchronously(RaidTimers.getInstance(), () -> {
             String id = raid.getAttacker().getId();
-            config.set(id + ".raiding", raid.getDefender().getId());
-            config.set(id + ".lastExplosion", raid.getLastExplosion());
+            config.set("raids." + id + ".raiding", raid.getDefender().getId());
+            config.set("raids." + id + ".lastExplosion", raid.getLastExplosion());
             try {
                 config.save(file);
             } catch (IOException e) {
@@ -129,10 +136,10 @@ public class RaidApi {
             String id = raid.getAttacker().getId();
 
             // does the config contain this raid context?
-            if(!config.contains(id + ".raiding"))
+            if(!config.contains("raids." + id))
                 return;
 
-            config.set(id + ".raiding", null);
+            config.set("raids." + id, null);
             try {
                 config.save(file);
             } catch (IOException e) {
@@ -162,7 +169,7 @@ public class RaidApi {
                 config.RAID_DEFENSE)
                 .replace("%online%", String.valueOf(attacker.getOnlinePlayers().size()))
                 .send(defender);
-        RaidContext context = new RaidContext(defender, attacker);
+        RaidContext context = new RaidContext(attacker, defender);
         addRaid(context);
         // Play a sound notification that the raid has started...
         XSound raidStartSound = XSound.ENTITY_BLAZE_DEATH;

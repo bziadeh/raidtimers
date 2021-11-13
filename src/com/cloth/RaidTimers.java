@@ -19,31 +19,44 @@ import java.util.List;
  */
 public class RaidTimers extends JavaPlugin {
 
-    // reference to the main class
     @Getter private static RaidTimers instance;
+
     private Config config;
     private RaidApi api;
 
     public void onEnable() {
         instance = this;
+
         config = Config.load(this);
         api = RaidApi.create();
+
         new RaidListener(this);
         new ActionListener(this);
         new CommandRaid(this);
+
         Bukkit.getScheduler().runTaskTimer(this, new ContextRunnable(), 0, 1200);
         Bukkit.getScheduler().runTaskTimer(this, new ShieldRunnable(), 0, 1200);
+
+        // todo: prevent faction disband during raids...
     }
 
     public void onDisable() {
-        List<RaidContext> contextList = getApi().getContextList();
-        for(int i = contextList.size() - 1; i >= 0; i--) {
-            RaidContext context = getApi().getContextList().get(i);
+        final List<RaidContext> raids = api.getContextList();
+        // cleanup before loading raids from flat-file
+        // remove them from memory, but DO NOT unsave them here
+        for(int i = raids.size() - 1; i >= 0; i--) {
+            RaidContext context = raids.get(i);
             context.getRaidGui().destroy();
-            contextList.remove(i);
+            raids.remove(i);
         }
+        System.out.println("Removed raids from memory. These will be recreated when the server starts.");
     }
 
+    /**
+     * Registers the specified listener.
+     *
+     * @param listener the listener being registered.
+     */
     public static void registerListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, instance);
     }

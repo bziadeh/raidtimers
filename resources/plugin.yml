@@ -1,6 +1,7 @@
 name: RaidTimers
 version: 0.0.1
-main: com.cloth.RaidTimersPlugin
+main: com.cloth.RaidTimers
+depend: [Factions]
 commands:
   raid:
     description: Opens the Raid gui.

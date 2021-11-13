@@ -25,7 +25,7 @@ prevent-break:
 # Prevent the use of the following items during raid defense.
 # Note: Here you should place the item type of your genbuckets.
 prevent-use:
-- MONSTER_EGG
+- CREEPER_SPAWN_EGG
 - BUCKET
 
 # Prevent the use of certain commands (by the defenders) during raid.

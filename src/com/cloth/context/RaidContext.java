@@ -12,13 +12,13 @@ public class RaidContext {
     private final String attackerId;
     private long lastExplosion;
 
-    public RaidContext(Faction defender, Faction attacker) {
-        this(defender.getId(), attacker.getId(), System.currentTimeMillis());
+    public RaidContext(Faction attacker, Faction defender) {
+        this(attacker.getId(), defender.getId(), System.currentTimeMillis());
     }
 
-    public RaidContext(String defenderId, String attackerId, long lastExplosion) {
-        this.defenderId = defenderId;
+    public RaidContext(String attackerId, String defenderId, long lastExplosion) {
         this.attackerId = attackerId;
+        this.defenderId = defenderId;
         this.lastExplosion = lastExplosion;
         this.raidGui = new RaidGui(this);
     }

@@ -2,14 +2,13 @@ package com.cloth.listeners;
 
 import com.cloth.RaidTimers;
 import com.cloth.context.RaidContext;
+import com.cryptomorin.xseries.XMaterial;
 import com.massivecraft.factions.*;
-import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.SpawnEgg;
 
 public class ActionListener implements Listener {
 
@@ -49,14 +48,7 @@ public class ActionListener implements Listener {
             return;
         }
 
-        if(RaidTimers.getInstance().getLocalConfig().PREVENT_USE.contains(event.getItem().getType().name())) {
-
-            SpawnEgg egg = (SpawnEgg) event.getItem().getData();
-
-            if(egg.getSpawnedType() != EntityType.CREEPER) {
-                return;
-            }
-
+        if (XMaterial.matchXMaterial(event.getItem()).isOneOf(RaidTimers.getInstance().getLocalConfig().PREVENT_USE)) {
             FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
 
             if(!player.hasFaction()) {
