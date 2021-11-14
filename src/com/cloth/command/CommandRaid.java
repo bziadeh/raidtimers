@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 
 public class CommandRaid implements CommandExecutor {
 
-    public CommandRaid(RaidTimers plugin) {
-        plugin.getCommand("raid").setExecutor(this);
+    public CommandRaid() {
+        RaidTimers.getInstance().getCommand("raid").setExecutor(this);
     }
 
     @Override

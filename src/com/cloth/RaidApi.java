@@ -72,8 +72,9 @@ public class RaidApi {
     private void loadConfig() {
         ConfigurationSection raids = config.getConfigurationSection("raids");
 
-        if(raids == null)
+        if(raids == null) {
             return;
+        }
 
         for(String attackerId : raids.getKeys(false)) {
             final String path = "raids." + attackerId;

@@ -10,6 +10,10 @@ import java.util.List;
  */
 public class Config {
 
+    private final RaidTimers plugin = RaidTimers.getInstance();
+    private static Config instance;
+
+    // All values in the configuration (config.yml) file...
     public final String RAID_START_TITLE, RAID_START_SUBTITLE;
     public final List<String> RAID_START;
     public final String RAID_DEFENSE_TITLE, RAID_DEFENSE_SUBTITLE;
@@ -22,17 +26,10 @@ public class Config {
     public final List<String> PREVENT_PLACEMENT;
     public final List<String> PREVENT_BREAK;
     public final List<String> PREVENT_USE;
-    private static Config instance;
-    private RaidTimers plugin;
+    public final List<String> PREVENT_COMMANDS;
 
-    /**
-     * Loads the data from the configuration file once.
-     *
-     * @param plugin the main class.
-     */
-    private Config(RaidTimers plugin) {
+    private Config() {
         // private constructor, singleton design pattern
-        this.plugin = plugin;
         plugin.saveDefaultConfig();
 
         FileConfiguration config = plugin.getConfig();
@@ -50,17 +47,17 @@ public class Config {
         PREVENT_PLACEMENT = (List<String>) config.getList("prevent-placement");
         PREVENT_BREAK = (List<String>) config.getList("prevent-break");
         PREVENT_USE = (List<String>) config.getList("prevent-use");
+        PREVENT_COMMANDS = (List<String>) config.getList("prevent-commands");
     }
 
     /**
      * Creates and returns a single instance of this class.
      *
-     * @param plugin the main class.
      * @return an instance of this class.
      */
-    public static Config load(RaidTimers plugin) {
+    public static Config load() {
         if(instance == null) {
-            return (instance = new Config(plugin));
+            return (instance = new Config());
         }
         return instance;
     }

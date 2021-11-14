@@ -19,11 +19,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class RaidListener implements Listener {
 
-    private final RaidTimers plugin;
+    private final RaidTimers plugin = RaidTimers.getInstance();
 
-    public RaidListener(RaidTimers instance) {
-        this.plugin = instance;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public RaidListener() {
+        plugin.registerListener(this);
     }
 
     @EventHandler
@@ -51,9 +50,8 @@ public class RaidListener implements Listener {
         if(event.getEntityType() == EntityType.PRIMED_TNT) {
             Faction faction = Board.getInstance().getFactionAt(new FLocation(event.getLocation()));
 
-            if(RaidTimers.getInstance().getApi().hasShield(faction)) {
+            if(plugin.getApi().hasShield(faction)) {
                 event.setCancelled(true);
-
                 return;
             }
 
@@ -69,7 +67,7 @@ public class RaidListener implements Listener {
                 return;
             }
 
-            final RaidContext context = RaidTimers.getInstance().getApi().getRaidInProgress(faction);
+            final RaidContext context = plugin.getApi().getRaidInProgress(faction);
 
             if(context != null) {
 
@@ -83,7 +81,7 @@ public class RaidListener implements Listener {
                 return;
             }
 
-            RaidTimers.getInstance().getApi().setRaidInProgress(faction, attacker);
+            plugin.getApi().setRaidInProgress(faction, attacker);
         }
     }
 }

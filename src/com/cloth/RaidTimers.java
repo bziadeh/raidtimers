@@ -2,7 +2,8 @@ package com.cloth;
 
 import com.cloth.command.CommandRaid;
 import com.cloth.context.RaidContext;
-import com.cloth.listeners.ActionListener;
+import com.cloth.listeners.CommandListener;
+import com.cloth.listeners.PlayerListener;
 import com.cloth.listeners.RaidListener;
 import com.cloth.context.ContextRunnable;
 import com.cloth.shield.ShieldRunnable;
@@ -19,26 +20,23 @@ public class RaidTimers extends JavaPlugin {
     @Getter private Config localConfig;
     @Getter private RaidApi api;
 
-    /**
-     * Called when this plugin is enabled. All instantiated classes
-     * must go here instead of the constructor to ensure dependencies are loaded.
-     */
     public void onEnable() {
         instance = this;
-        localConfig = Config.load(this);
+        localConfig = Config.load();
         api = RaidApi.create();
 
-        new RaidListener(this);
-        new ActionListener(this);
-        new CommandRaid(this);
-
-        Bukkit.getScheduler().runTaskTimer(this, new ContextRunnable(), 0, 1200);
-        Bukkit.getScheduler().runTaskTimer(this, new ShieldRunnable(), 0, 1200);
+        new RaidListener();
+        new PlayerListener();
+        new CommandListener();
 
         // todo: prevent faction disband during raids...
         // todo: time remaining feature?
         // todo: rewards? kill other members to get items?
 
+        new CommandRaid();
+
+        Bukkit.getScheduler().runTaskTimer(this, new ContextRunnable(), 0, 1200);
+        Bukkit.getScheduler().runTaskTimer(this, new ShieldRunnable(), 0, 1200);
     }
 
     /**
@@ -62,7 +60,7 @@ public class RaidTimers extends JavaPlugin {
      *
      * @param listener the listener being registered.
      */
-    public static void registerListener(Listener listener) {
+    public void registerListener(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, instance);
     }
 }

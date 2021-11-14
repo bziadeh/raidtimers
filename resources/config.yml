@@ -29,7 +29,11 @@ prevent-use:
 - BUCKET
 
 # Prevent the use of certain commands (by the defenders) during raid.
-prevent-commands: []
+# Here we disable three faction commands. "f" includes "factions" as well
+prevent-commands:
+- f chest
+- f pv
+- f vault
 
 ####################################################
 #                                                  #
@@ -40,6 +44,7 @@ prevent-commands: []
 cannot-break: '&eYou cannot break this block while being raided.'
 cannot-place: '&eYou cannot place this in your claims while being raided.'
 cannot-use: '&eYou cannot use this item while being raided.'
+cannot-execute: '&eYou cannot execute this command while being raided.'
 
 
 #         Raid Start          #

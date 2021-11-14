@@ -36,7 +36,7 @@ public class RaidGui implements Listener {
         setItems(XMaterial.WHITE_STAINED_GLASS_PANE.parseItem(), 10, 16, 28, 34);
         setItems(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem(), 0, 8, 36, 44);
 
-        RaidTimers.registerListener(this);
+        RaidTimers.getInstance().registerListener(this);
 
         taskId = new BukkitRunnable() {
             @Override
