@@ -1,8 +1,4 @@
-####################################################
-#                                                  #
-#                 General Settings                 #
-#                                                  #
-####################################################
+#         General Settings         #
 
 # If you start a raid, and stop shooting for 'x minutes or hours' then,
 # the defending faction will receive a shield.
@@ -25,7 +21,7 @@ prevent-break:
 # Prevent the use of the following items during raid defense.
 # Note: Here you should place the item type of your genbuckets.
 prevent-use:
-- CREEPER_SPAWN_EGG
+- SPAWN_EGG
 - BUCKET
 
 # Prevent the use of certain commands (by the defenders) during raid.
@@ -35,23 +31,21 @@ prevent-commands:
 - f pv
 - f vault
 
-####################################################
-#                                                  #
-#                     Messages                     #
-#                                                  #
-####################################################
+
+#         General Messages         #
 
 cannot-break: '&eYou cannot break this block while being raided.'
 cannot-place: '&eYou cannot place this in your claims while being raided.'
 cannot-use: '&eYou cannot use this item while being raided.'
 cannot-execute: '&eYou cannot execute this command while being raided.'
+cannot-disband: '&eYou cannot disband your faction while a raid is active.'
+cannot-leave: '&eYou cannot leave your faction while a raid is active.'
 
 
 #         Raid Start          #
 
 raid-start-title: '&cRaid Started'
 raid-start-subtitle: '&cYour faction has initiated a raid on %faction%'
-
 raid-start:
 - ''
 - '&cYou have initiated a raid on: &f%faction% &7(%online% Online)'
@@ -63,10 +57,26 @@ raid-start:
 
 raid-defense-title: '&cRaid Defense'
 raid-defense-subtitle: '&cYou are being raided, go defend your base!'
-
 raid-defense:
-  - ''
-  - '&cYou are being raided by: &f%faction% &7(%online% Online)'
-  - ''
-  - '&cYou may type &f/raid&c for additional information.'
-  - ''
+- ''
+- '&cYou are being raided by: &f%faction% &7(%online% Online)'
+- ''
+- '&cYou may type &f/raid&c for additional information.'
+- ''
+
+#         Items          #
+
+raid-item:
+  name: '&8&l[&4&l!&8&l] &c&lYOU ARE CURRENTLY IN A RAID'
+  lore:
+    - ''
+    - '&8&lRAIDING: &f%attacker% &7(%onlineAttackers% Online)'
+    - '&8&lDEFENDING: &f%defender% &7(%onlineDefenders% Online)'
+    - ''
+    - '&7The faction actively raiding must fire TNT once every'
+    - '&715 minutes to remain in raid.'
+    - ''
+    - '&7While this raid is active, the defending faction'
+    - '&7will be unable to mine spawners or regen walls.'
+    - ''
+    - '&cLast Explosion: %time% ago'

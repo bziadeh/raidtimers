@@ -1,7 +1,8 @@
 package com.cloth;
 
-import com.cloth.context.RaidContext;
-import com.cloth.objects.Notification;
+import com.cloth.framework.CustomPlugin;
+import com.cloth.raids.Raid;
+import com.cloth.notification.Notification;
 import com.cloth.shield.Shield;
 import com.cryptomorin.xseries.XSound;
 import com.massivecraft.factions.Faction;
@@ -24,7 +25,7 @@ public class RaidApi {
 
     private static RaidApi instance;
 
-    @Getter private final List<RaidContext> contextList = new ArrayList<>();
+    @Getter private final List<Raid> raidList = new ArrayList<>();
     @Getter private final List<Shield> shieldList = new ArrayList<>();
 
     private File file;
@@ -52,7 +53,7 @@ public class RaidApi {
      * loads all raids stored in the file.
      */
     private void createConfig() {
-        RaidTimers plugin = RaidTimers.getInstance();
+        CustomPlugin plugin = RaidTimers.getInstance();
         // create new config?
         file = new File(plugin.getDataFolder(), "raids.yml");
         if(!file.exists()) {
@@ -82,7 +83,7 @@ public class RaidApi {
             String defenderId = config.getString(path + ".raiding");
             long lastExplosion = config.getLong(path + ".lastExplosion");
 
-            contextList.add(new RaidContext(attackerId, defenderId, lastExplosion));
+            raidList.add(new Raid(attackerId, defenderId, lastExplosion));
         }
     }
 
@@ -92,8 +93,8 @@ public class RaidApi {
      *
      * @param raid the raid being added.
      */
-    public void addRaid(RaidContext raid)  {
-        contextList.add(raid);
+    public void addRaid(Raid raid)  {
+        raidList.add(raid);
         saveToConfig(raid);
     }
 
@@ -103,9 +104,9 @@ public class RaidApi {
      *
      * @param raid the raid being removed.
      */
-    public void removeRaid(RaidContext raid) {
+    public void removeRaid(Raid raid) {
         raid.getRaidGui().destroy();
-        contextList.remove(raid);
+        raidList.remove(raid);
         deleteFromConfig(raid);
     }
 
@@ -114,7 +115,7 @@ public class RaidApi {
      *
      * @param raid the raid being saved.
      */
-    private void saveToConfig(RaidContext raid) {
+    private void saveToConfig(Raid raid) {
         Bukkit.getScheduler().runTaskAsynchronously(RaidTimers.getInstance(), () -> {
             String id = raid.getAttacker().getId();
             config.set("raids." + id + ".raiding", raid.getDefender().getId());
@@ -132,7 +133,7 @@ public class RaidApi {
      *
      * @param raid the raid being deleted.
      */
-    private void deleteFromConfig(RaidContext raid) {
+    private void deleteFromConfig(Raid raid) {
         Bukkit.getScheduler().runTaskAsynchronously(RaidTimers.getInstance(), () -> {
             String id = raid.getAttacker().getId();
 
@@ -157,7 +158,7 @@ public class RaidApi {
      * @param attacker the attacking faction.
      */
     public void setRaidInProgress(Faction defender, Faction attacker) {
-        Config config = RaidTimers.getInstance().getLocalConfig();
+        Config config = RaidTimers.getLocalConfig();
         new Notification("%faction%", defender.getTag(),
                 config.RAID_START_TITLE,
                 config.RAID_START_SUBTITLE,
@@ -170,7 +171,7 @@ public class RaidApi {
                 config.RAID_DEFENSE)
                 .replace("%online%", String.valueOf(attacker.getOnlinePlayers().size()))
                 .send(defender);
-        RaidContext context = new RaidContext(attacker, defender);
+        Raid context = new Raid(attacker, defender);
         addRaid(context);
         // Play a sound notification that the raid has started...
         XSound raidStartSound = XSound.ENTITY_BLAZE_DEATH;
@@ -184,8 +185,8 @@ public class RaidApi {
      * @param faction the faction being requested.
      * @return the RaidContext.
      */
-    public RaidContext getRaidInProgress(Faction faction) {
-        return contextList.stream().filter(context -> context.getAttacker().equals(faction) || context.getDefender().equals(faction)).findFirst().orElse(null);
+    public Raid getRaidInProgress(Faction faction) {
+        return raidList.stream().filter(raid -> raid.getAttacker().equals(faction) || raid.getDefender().equals(faction)).findFirst().orElse(null);
     }
 
     /**
@@ -210,5 +211,14 @@ public class RaidApi {
             }
         }
         return false;
+    }
+
+    /**
+     * Removes the explosion shield from the specified faction.
+     *
+     * @param faction the faction whose shield is being removed.
+     */
+    public void removeShield(Faction faction) {
+        shieldList.remove(faction);
     }
 }

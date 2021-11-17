@@ -1,5 +1,6 @@
 package com.cloth;
 
+import com.cloth.framework.CustomPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -10,44 +11,68 @@ import java.util.List;
  */
 public class Config {
 
-    private final RaidTimers plugin = RaidTimers.getInstance();
+    private final CustomPlugin plugin = RaidTimers.getInstance();
     private static Config instance;
 
-    // All values in the configuration (config.yml) file...
+    // All values in the configuration file loaded ONCE.
     public final String RAID_START_TITLE, RAID_START_SUBTITLE;
     public final List<String> RAID_START;
     public final String RAID_DEFENSE_TITLE, RAID_DEFENSE_SUBTITLE;
     public final List<String> RAID_DEFENSE;
+
     public final String CANNOT_BREAK;
     public final String CANNOT_PLACE;
     public final String CANNOT_USE;
+    public final String CANNOT_EXECUTE;
+    public final String CANNOT_DISBAND;
+    public final String CANNOT_LEAVE;
+
     public final int EXPLOSION_THRESHOLD;
     public final int SHIELD_DURATION;
+
     public final List<String> PREVENT_PLACEMENT;
     public final List<String> PREVENT_BREAK;
     public final List<String> PREVENT_USE;
     public final List<String> PREVENT_COMMANDS;
+
+    public final String RAID_ITEM_NAME;
+    public final List<String> RAID_ITEM_LORE;
 
     private Config() {
         // private constructor, singleton design pattern
         plugin.saveDefaultConfig();
 
         FileConfiguration config = plugin.getConfig();
+
+        // raid notification messages
         RAID_START_TITLE = getString("raid-start-title");
         RAID_START_SUBTITLE = getString("raid-start-subtitle");
         RAID_START = getList("raid-start");
         RAID_DEFENSE_TITLE = getString("raid-defense-title");
         RAID_DEFENSE_SUBTITLE = getString("raid-defense-subtitle");
         RAID_DEFENSE = getList("raid-defense");
+
+        // general messages
         CANNOT_BREAK = getString("cannot-break");
         CANNOT_PLACE = getString("cannot-place");
         CANNOT_USE = getString("cannot-use");
+        CANNOT_EXECUTE = getString("cannot-execute");
+        CANNOT_DISBAND = getString("cannot-disband");
+        CANNOT_LEAVE = getString("cannot-leave");
+
+        // raid settings
         EXPLOSION_THRESHOLD = minutesFromString(getString("explosion-threshold"));
         SHIELD_DURATION = minutesFromString(getString("shield-duration"));
+
+        // lists of blocks, items, commands, etc.
         PREVENT_PLACEMENT = (List<String>) config.getList("prevent-placement");
         PREVENT_BREAK = (List<String>) config.getList("prevent-break");
         PREVENT_USE = (List<String>) config.getList("prevent-use");
         PREVENT_COMMANDS = (List<String>) config.getList("prevent-commands");
+
+        // inventory items
+        RAID_ITEM_NAME = getString("raid-item.name");
+        RAID_ITEM_LORE = getList("raid-item.lore");
     }
 
     /**

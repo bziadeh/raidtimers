@@ -1,4 +1,4 @@
-package com.cloth.objects;
+package com.cloth.notification;
 
 import com.massivecraft.factions.Faction;
 import org.bukkit.entity.Player;

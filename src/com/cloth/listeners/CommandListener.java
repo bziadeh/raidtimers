@@ -15,7 +15,7 @@ public class CommandListener implements Listener {
 
     @EventHandler
     public void onPreCommand(PlayerCommandPreprocessEvent event) {
-        List<String> commandsToPrevent = RaidTimers.getInstance().getLocalConfig().PREVENT_COMMANDS;
+        List<String> commandsToPrevent = RaidTimers.getLocalConfig().PREVENT_COMMANDS;
         if(commandsToPrevent == null)
             return;
         for(String blockedCommand : commandsToPrevent) {
@@ -23,6 +23,7 @@ public class CommandListener implements Listener {
                     .replaceFirst("factions", "f");
             if(blockedCommand.equalsIgnoreCase(command)) {
                 event.setCancelled(true);
+
                 return;
             }
         }

@@ -1,7 +1,7 @@
 package com.cloth.inventory;
 
 import com.cloth.RaidTimers;
-import com.cloth.context.RaidContext;
+import com.cloth.raids.Raid;
 import com.cryptomorin.xseries.XMaterial;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
@@ -14,18 +14,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class RaidGui implements Listener {
+public class RaidGui implements Gui {
 
     private Inventory inventory;
-    private RaidContext context;
+    private Raid raid;
 
     private final String inventoryName = "Raid";
     private int taskId = -1;
 
-    public RaidGui(RaidContext context) {
-        // We need the RaidContext because our items will use the data from
-        // the RaidContext object as its lore content.
-        this.context = context;
+    public RaidGui(Raid raid) {
+        // We need the Raid because our items will use the data from
+        // the Raid object as its lore content.
+        this.raid = raid;
         this.inventory = Bukkit.createInventory(null, 45, inventoryName);
 
         updateBorder();
@@ -53,14 +53,14 @@ public class RaidGui implements Listener {
         event.setCancelled(true);
     }
 
-    private void updateFill() {
+    public void updateFill() {
         for(int i = 0; i < inventory.getSize(); i++) {
             if(inventory.getItem(i) == null || inventory.getItem(i).getType() == XMaterial.AIR.parseMaterial())
                 inventory.setItem(i, XMaterial.BLACK_STAINED_GLASS_PANE.parseItem());
         }
     }
 
-    private void updateBorder() {
+    public void updateBorder() {
         ItemStack item = XMaterial.WHITE_STAINED_GLASS_PANE.parseItem();
         for(int i = 0; i < inventory.getSize(); i++) {
             if(i % 9 == 0 || (i + 1) % 9 == 0 || i > 34 || i < 9)
@@ -75,26 +75,7 @@ public class RaidGui implements Listener {
     }
 
     public void updateItems() {
-        // time elapsed in minutes since the last explosion
-        long elapsed = (System.currentTimeMillis() - context.getLastExplosion());
-        // getting online players for both factions
-        int defenderOnline = context.getDefender().getOnlinePlayers().size();
-        int attackerOnline = context.getAttacker().getOnlinePlayers().size();
-        // create our center item with the data added
-        GuiItem centerItem = new GuiItem(XMaterial.TNT.parseMaterial())
-                .setName("&8&l[&4&l!&8&l] &c&lYOU ARE CURRENTLY IN A RAID")
-                .setLore("",
-                        "&8&lRAIDING: &f" + context.getAttacker().getTag() + " &7(" + attackerOnline + " Online)",
-                        "&8&lDEFENDING: &f" + context.getDefender().getTag() + " &7(" + defenderOnline + " Online)",
-                        "",
-                        "&7The faction actively raiding must fire TNT once every",
-                        "&715 minutes to remain in raid.",
-                        "",
-                        "&7While this raid is active, the defending faction",
-                        "&7will be unable to mine spawners or regen walls.",
-                        "",
-                        "&cLast Explosion: " + getTimeElapsed(elapsed) + " ago");
-        inventory.setItem(22, centerItem.getItem());
+        inventory.setItem(22, raid.getItem());
     }
 
     public void destroy() {
@@ -107,13 +88,7 @@ public class RaidGui implements Listener {
             inventory.getViewers().get(i).closeInventory();
         // cleanup
         inventory = null;
-        context = null;
-    }
-
-    private String getTimeElapsed(long millis) {
-        return DurationFormatUtils.formatDurationWords(millis,
-                true,
-                false);
+        raid = null;
     }
 
     public void open(Player player) {

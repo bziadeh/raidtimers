@@ -1,7 +1,9 @@
 package com.cloth.listeners;
 
+import com.cloth.Config;
+import com.cloth.RaidApi;
 import com.cloth.RaidTimers;
-import com.cloth.context.RaidContext;
+import com.cloth.raids.Raid;
 import com.cryptomorin.xseries.XMaterial;
 import com.massivecraft.factions.*;
 import org.bukkit.event.EventHandler;
@@ -12,15 +14,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerListener implements Listener {
 
-    private final RaidTimers plugin = RaidTimers.getInstance();
+    private final RaidApi api = RaidTimers.getApi();
+    private final Config config = RaidTimers.getLocalConfig();
 
     public PlayerListener() {
-        plugin.registerListener(this);
+        RaidTimers.getInstance().registerListener(this);
     }
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if(plugin.getLocalConfig().PREVENT_BREAK.contains(event.getBlock().getType().name())) {
+        if(config.PREVENT_BREAK.contains(event.getBlock().getType().name())) {
 
             final FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
 
@@ -30,13 +33,13 @@ public class PlayerListener implements Listener {
 
             Faction faction = player.getFaction();
 
-            RaidContext context = plugin.getApi().getRaidInProgress(faction);
+            Raid context = api.getRaidInProgress(faction);
 
             if(context != null && context.getDefender().equals(faction)) {
 
                 event.setCancelled(true);
 
-                event.getPlayer().sendMessage(plugin.getLocalConfig().CANNOT_BREAK);
+                event.getPlayer().sendMessage(config.CANNOT_BREAK);
             }
         }
     }
@@ -47,7 +50,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        if (XMaterial.matchXMaterial(event.getItem()).isOneOf(plugin.getLocalConfig().PREVENT_USE)) {
+        if (XMaterial.matchXMaterial(event.getItem()).isOneOf(config.PREVENT_USE)) {
             FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
 
             if(!player.hasFaction()) {
@@ -56,20 +59,20 @@ public class PlayerListener implements Listener {
 
             final Faction faction = player.getFaction();
 
-            RaidContext context = plugin.getApi().getRaidInProgress(faction);
+            Raid context = api.getRaidInProgress(faction);
 
             if(context != null && context.getDefender().equals(faction)) {
 
                 event.setCancelled(true);
 
-                player.sendMessage(plugin.getLocalConfig().CANNOT_USE);
+                player.sendMessage(config.CANNOT_USE);
             }
         }
     }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        if(plugin.getLocalConfig().PREVENT_PLACEMENT.contains(event.getBlock().getType().name())) {
+        if(config.PREVENT_PLACEMENT.contains(event.getBlock().getType().name())) {
 
             FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
 
@@ -79,7 +82,7 @@ public class PlayerListener implements Listener {
 
             final Faction faction = player.getFaction();
 
-            RaidContext context = plugin.getApi().getRaidInProgress(faction);
+            Raid context = api.getRaidInProgress(faction);
 
             if(context != null && context.getDefender().equals(faction)) {
 
@@ -89,7 +92,7 @@ public class PlayerListener implements Listener {
 
                     event.setCancelled(true);
 
-                    player.sendMessage(plugin.getLocalConfig().CANNOT_PLACE);
+                    player.sendMessage(config.CANNOT_PLACE);
                 }
             }
         }

@@ -7,6 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GuiItem {
 
@@ -27,13 +28,36 @@ public class GuiItem {
         return this;
     }
 
-    public GuiItem setLore(String... lore) {
+    public GuiItem setLore(List<String> lore) {
         final List<String> translated = new ArrayList<>();
         for(String line : lore)
             translated.add(ChatColor.translateAlternateColorCodes('&', line));
         ItemMeta meta = item.getItemMeta();
         meta.setLore(translated);
         item.setItemMeta(meta);
+        return this;
+    }
+
+    public GuiItem replace(String placeholder, String replacement) {
+        if(!item.hasItemMeta()) {
+            return this;
+        }
+
+        // update the lore placeholders
+        if(item.getItemMeta().hasLore()) {
+            List<String> lore = item.getItemMeta().getLore();
+            List<String> updated = new ArrayList<>();
+            for(String line : lore) {
+                updated.add(line.replaceAll(placeholder, replacement));
+            }
+            setLore(updated);
+        }
+
+        // update the name placeholders
+        if(item.getItemMeta().hasDisplayName()) {
+            setName(item.getItemMeta().getDisplayName().replaceAll(placeholder, replacement));
+        }
+
         return this;
     }
 

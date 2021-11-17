@@ -1,13 +1,18 @@
 package com.cloth.listeners;
 
 import com.cloth.RaidTimers;
-import com.cloth.context.RaidContext;
+import com.cloth.framework.CustomPlugin;
+import com.cloth.raids.Raid;
+import com.cryptomorin.xseries.XBlock;
 import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -19,7 +24,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class RaidListener implements Listener {
 
-    private final RaidTimers plugin = RaidTimers.getInstance();
+    private final CustomPlugin plugin = RaidTimers.getInstance();
 
     public RaidListener() {
         plugin.registerListener(this);
@@ -34,13 +39,18 @@ public class RaidListener implements Listener {
     public void onDispense(BlockDispenseEvent event) {
         if(event.getItem().getType() == Material.TNT && event.getBlock().getType() == Material.DISPENSER) {
             final Block block = event.getBlock();
-
             final Faction faction = Board.getInstance().getFactionAt(new FLocation(block));
 
+            if(!faction.isNormal()) {
+                return;
+            }
             event.setCancelled(true);
 
-            TNTPrimed tnt = block.getWorld().spawn(block.getLocation(), TNTPrimed.class);
+            BlockFace face = XBlock.getDirection(block);
+            Block front = block.getRelative(face); // get block in front of dispenser
+            Location location = front.getLocation().clone();
 
+            TNTPrimed tnt = block.getWorld().spawn(location.add(0.5, 0.5, 0.5), TNTPrimed.class);
             tnt.setMetadata("faction", new FixedMetadataValue(plugin, faction.getTag()));
         }
     }
@@ -50,14 +60,18 @@ public class RaidListener implements Listener {
         if(event.getEntityType() == EntityType.PRIMED_TNT) {
             Faction faction = Board.getInstance().getFactionAt(new FLocation(event.getLocation()));
 
-            if(plugin.getApi().hasShield(faction)) {
+            if(!faction.isNormal()) {
+                return;
+            }
+
+            if(RaidTimers.getApi().hasShield(faction)) {
                 event.setCancelled(true);
                 return;
             }
 
             final TNTPrimed tnt = (TNTPrimed) event.getEntity();
 
-            if(!tnt.hasMetadata("faction")) { // does this fix the error in console?
+            if(!tnt.hasMetadata("faction")) {
                 return;
             }
 
@@ -67,13 +81,12 @@ public class RaidListener implements Listener {
                 return;
             }
 
-            final RaidContext context = plugin.getApi().getRaidInProgress(faction);
+            final Raid context = RaidTimers.getApi().getRaidInProgress(faction);
 
             if(context != null) {
 
                 if(!context.getAttacker().equals(attacker)) {
                     // The faction is already being raided by someone else!
-
                     return;
                 }
 
@@ -81,7 +94,7 @@ public class RaidListener implements Listener {
                 return;
             }
 
-            plugin.getApi().setRaidInProgress(faction, attacker);
+            RaidTimers.getApi().setRaidInProgress(faction, attacker);
         }
     }
 }
