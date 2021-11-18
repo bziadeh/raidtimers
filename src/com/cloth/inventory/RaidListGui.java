@@ -1,20 +1,38 @@
 package com.cloth.inventory;
 
 import com.cloth.RaidTimers;
+import com.cloth.events.RaidEndEvent;
+import com.cloth.events.RaidStartEvent;
 import com.cloth.raids.Raid;
 import com.cryptomorin.xseries.XMaterial;
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-public class RaidListGui implements Gui {
+import java.util.List;
+
+import static java.util.Objects.requireNonNull;
+
+public class RaidListGui extends Gui {
 
     private final Inventory inventory;
-    private final String inventoryName = "Active Raids";
 
-    public RaidListGui() {
-        inventory = Bukkit.createInventory(null, 54, inventoryName);
+    public RaidListGui(String name, int size) {
+        super(name, size);
+        this.inventory = getInventory();
         updateBorder();
+        updateItems();
+    }
+
+    @EventHandler
+    public void onRaidStart(RaidStartEvent event) {
+        updateItems();
+    }
+
+    @EventHandler
+    public void onRaidEnd(RaidEndEvent event) {
         updateItems();
     }
 
@@ -29,8 +47,27 @@ public class RaidListGui implements Gui {
 
     @Override
     public void updateItems() {
-        for(Raid raid : RaidTimers.getApi().getRaidList()) {
 
+        // clear the old items...
+        for(int i = 10; i <= 52; i++) {
+            inventory.setItem(i, new ItemStack(Material.AIR));
+        }
+
+        final List<Raid> raidList = RaidTimers.getApi().getRaidList();
+
+        // add new raid items using new data...
+        for(int i = 0, slot = 10; i < raidList.size() || slot <= 52; i++, slot++) {
+
+            final Raid raid = raidList.get(i);
+            final ItemStack item = raid.getItem();
+
+            ItemMeta meta = item.getItemMeta();
+            assert meta != null;
+
+            meta.setDisplayName("§7Raid #" + i);
+            item.setItemMeta(meta);
+
+            inventory.setItem(slot, item);
         }
     }
 

@@ -2,6 +2,7 @@ package com.cloth;
 
 import com.cloth.command.CommandRaid;
 import com.cloth.framework.CustomPlugin;
+import com.cloth.inventory.RaidListGui;
 import com.cloth.listeners.FactionListener;
 import com.cloth.raids.Raid;
 import com.cloth.listeners.CommandListener;
@@ -18,6 +19,7 @@ public class RaidTimers extends CustomPlugin {
 
     @Getter private static Config localConfig;
     @Getter private static RaidApi api;
+    @Getter private static RaidListGui raidListGui;
 
     @Override
     public void onPluginLoad() {
@@ -37,6 +39,8 @@ public class RaidTimers extends CustomPlugin {
 
         Bukkit.getScheduler().runTaskTimer(this, new RaidRunnable(), 0, 1200);
         Bukkit.getScheduler().runTaskTimer(this, new ShieldRunnable(), 0, 1200);
+
+        raidListGui = new RaidListGui("Raid List", 54);
     }
 
     public void onDisable() {
@@ -50,6 +54,7 @@ public class RaidTimers extends CustomPlugin {
             raids.remove(i);
         }
 
+        raidListGui.destroy();
         System.out.println("Removed raids from memory. These will be recreated when the server starts.");
     }
 }

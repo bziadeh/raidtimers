@@ -8,7 +8,6 @@ import com.massivecraft.factions.Board;
 import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -94,7 +93,8 @@ public class RaidListener implements Listener {
                 return;
             }
 
-            RaidTimers.getApi().setRaidInProgress(faction, attacker);
+            RaidTimers.getApi().setRaidInProgress(attacker, faction);
         }
     }
+
 }

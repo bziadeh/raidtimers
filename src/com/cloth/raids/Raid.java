@@ -26,7 +26,7 @@ public class Raid {
         this.attackerId = attackerId;
         this.defenderId = defenderId;
         this.lastExplosion = lastExplosion;
-        this.raidGui = new RaidGui(this);
+        this.raidGui = new RaidGui(this, "Raid", 45);
     }
 
     public ItemStack getItem() {

@@ -2,6 +2,8 @@ package com.cloth.command;
 
 import com.cloth.RaidApi;
 import com.cloth.RaidTimers;
+import com.cloth.events.RaidEndEvent;
+import com.cloth.inventory.RaidListGui;
 import com.cloth.raids.Raid;
 import com.cryptomorin.xseries.XSound;
 import com.massivecraft.factions.FPlayers;
@@ -44,9 +46,11 @@ public class CommandRaid implements CommandExecutor {
     }
 
     private void openGui(Player player) {
+        RaidListGui gui = RaidTimers.getRaidListGui();
+
         Faction faction = FPlayers.getInstance().getByPlayer(player).getFaction();
         if(faction == null || !faction.isNormal()) {
-            // not in faction
+            gui.open(player);
             return;
         }
 
@@ -56,7 +60,7 @@ public class CommandRaid implements CommandExecutor {
                 // message shield info
                 return;
             }
-            // message no active raid?
+            gui.open(player);
             return;
         }
 

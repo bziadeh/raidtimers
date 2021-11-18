@@ -1,5 +1,7 @@
 package com.cloth;
 
+import com.cloth.events.RaidEndEvent;
+import com.cloth.events.RaidStartEvent;
 import com.cloth.framework.CustomPlugin;
 import com.cloth.raids.Raid;
 import com.cloth.notification.Notification;
@@ -96,6 +98,10 @@ public class RaidApi {
     public void addRaid(Raid raid)  {
         raidList.add(raid);
         saveToConfig(raid);
+
+        // Raid started...!
+        RaidStartEvent event = new RaidStartEvent(raid);
+        RaidTimers.getInstance().getServer().getPluginManager().callEvent(event);
     }
 
     /**
@@ -108,6 +114,10 @@ public class RaidApi {
         raid.getRaidGui().destroy();
         raidList.remove(raid);
         deleteFromConfig(raid);
+
+        // Raid ended...!
+        RaidEndEvent event = new RaidEndEvent(raid);
+        RaidTimers.getInstance().getServer().getPluginManager().callEvent(event);
     }
 
     /**
@@ -157,7 +167,7 @@ public class RaidApi {
      * @param defender the defending faction.
      * @param attacker the attacking faction.
      */
-    public void setRaidInProgress(Faction defender, Faction attacker) {
+    public void setRaidInProgress(Faction attacker, Faction defender) {
         Config config = RaidTimers.getLocalConfig();
         new Notification("%faction%", defender.getTag(),
                 config.RAID_START_TITLE,
