@@ -1,6 +1,9 @@
 package com.cloth;
 
-import com.cloth.command.CommandRaid;
+import com.cloth.api.RaidApi;
+import com.cloth.command.raid.RaidCommand;
+import com.cloth.command.Command;
+import com.cloth.config.Config;
 import com.cloth.framework.CustomPlugin;
 import com.cloth.inventory.RaidListGui;
 import com.cloth.listeners.FactionListener;
@@ -9,6 +12,7 @@ import com.cloth.listeners.CommandListener;
 import com.cloth.listeners.PlayerListener;
 import com.cloth.listeners.RaidListener;
 import com.cloth.raids.RaidRunnable;
+import com.cloth.shield.ShieldExpansion;
 import com.cloth.shield.ShieldRunnable;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -31,16 +35,19 @@ public class RaidTimers extends CustomPlugin {
         new CommandListener();
         new FactionListener();
 
-        // todo: remove TNT from dispenser
         // todo: time remaining feature?
         // todo: rewards? kill other members to get items?
+        new RaidCommand("raid");
 
-        new CommandRaid();
+        Bukkit.getScheduler().runTaskTimer(this, new RaidRunnable(), 0, 20);
+        Bukkit.getScheduler().runTaskTimer(this, new ShieldRunnable(), 0, 20);
 
-        Bukkit.getScheduler().runTaskTimer(this, new RaidRunnable(), 0, 1200);
-        Bukkit.getScheduler().runTaskTimer(this, new ShieldRunnable(), 0, 1200);
+        // Create our GUI displaying the list of ALL active raids on the server.
+        raidListGui = new RaidListGui(localConfig.RAID_LIST_GUI, 54);
 
-        raidListGui = new RaidListGui("Raid List", 54);
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new ShieldExpansion().register();
+        }
     }
 
     public void onDisable() {

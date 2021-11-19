@@ -35,7 +35,7 @@ public class Notification {
     }
 
     public void send(Player player) {
-        TitleApi.sendTitle(player, title, subtitle, 10, 20, 10);
+        TitleApi.sendTitle(player, title, subtitle, 20, 40, 20);
         messages.forEach(player::sendMessage);
     }
 }

@@ -1,7 +1,9 @@
 package com.cloth.inventory;
 
+import com.cryptomorin.xseries.XEnchantment;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -58,6 +60,14 @@ public class GuiItem {
             setName(item.getItemMeta().getDisplayName().replaceAll(placeholder, replacement));
         }
 
+        return this;
+    }
+
+    public GuiItem fakeEnchantment() {
+        ItemMeta meta = item.getItemMeta();
+        meta.addEnchant(XEnchantment.DURABILITY.parseEnchantment(), 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
         return this;
     }
 

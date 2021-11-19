@@ -1,7 +1,7 @@
 package com.cloth.raids;
 
-import com.cloth.Config;
-import com.cloth.RaidApi;
+import com.cloth.config.Config;
+import com.cloth.api.RaidApi;
 import com.cloth.RaidTimers;
 
 import java.util.List;
@@ -16,8 +16,8 @@ public class RaidRunnable implements Runnable {
         List<Raid> raidList = api.getRaidList();
         for(int i = raidList.size() - 1; i >= 0; i--) {
             final Raid raid = raidList.get(i);
-            long minutesElapsed = (System.currentTimeMillis() - raid.getLastExplosion()) / 1000 / 60;
-            if(minutesElapsed >= config.EXPLOSION_THRESHOLD) {
+            long elapsed = (System.currentTimeMillis() - raid.getLastExplosion()) / 1000 / 60;
+            if(elapsed >= (long) config.EXPLOSION_THRESHOLD) {
                 api.removeRaid(raid);
                 api.setShield(raid.getDefender());
             }

@@ -1,13 +1,16 @@
 package com.cloth.listeners;
 
-import com.cloth.Config;
-import com.cloth.RaidApi;
+import com.cloth.config.Config;
+import com.cloth.api.RaidApi;
 import com.cloth.RaidTimers;
 import com.cloth.raids.Raid;
+import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.massivecraft.factions.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -46,26 +49,37 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if(event.getItem() == null) {
+        if(event.getItem() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
-        if (XMaterial.matchXMaterial(event.getItem()).isOneOf(config.PREVENT_USE)) {
-            FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
+        for(String item : config.PREVENT_USE) {
 
-            if(!player.hasFaction()) {
-                return;
+            XMaterial material = XMaterial.matchXMaterial(item).orElse(null);
+
+            if(material == null) {
+                System.out.println("[Warning] Null material name in prevent-use list: " + item);
+
+                continue;
             }
 
-            final Faction faction = player.getFaction();
+            if(event.getItem().getType() == material.parseMaterial()) {
+                FPlayer player = FPlayers.getInstance().getByPlayer(event.getPlayer());
+                Player normal = player.getPlayer();
 
-            Raid context = api.getRaidInProgress(faction);
+                if(!player.hasFaction()) {
+                    return;
+                }
 
-            if(context != null && context.getDefender().equals(faction)) {
+                final Faction faction = player.getFaction();
 
-                event.setCancelled(true);
+                Raid context = api.getRaidInProgress(faction);
 
-                player.sendMessage(config.CANNOT_USE);
+                if(context != null && context.getDefender().equals(faction)) {
+                    event.setCancelled(true);
+                    normal.sendMessage(config.CANNOT_USE);
+                    return;
+                }
             }
         }
     }

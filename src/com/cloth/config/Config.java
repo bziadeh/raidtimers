@@ -1,5 +1,6 @@
-package com.cloth;
+package com.cloth.config;
 
+import com.cloth.RaidTimers;
 import com.cloth.framework.CustomPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -26,6 +27,9 @@ public class Config {
     public final String CANNOT_EXECUTE;
     public final String CANNOT_DISBAND;
     public final String CANNOT_LEAVE;
+    public final String CANNOT_COMMAND;
+    public final String CANNOT_UNCLAIM;
+    public final String SHIELD;
 
     public final int EXPLOSION_THRESHOLD;
     public final int SHIELD_DURATION;
@@ -37,6 +41,9 @@ public class Config {
 
     public final String RAID_ITEM_NAME;
     public final List<String> RAID_ITEM_LORE;
+
+    public final String RAID_LIST_GUI;
+    public final String RAID_GUI;
 
     private Config() {
         // private constructor, singleton design pattern
@@ -59,6 +66,9 @@ public class Config {
         CANNOT_EXECUTE = getString("cannot-execute");
         CANNOT_DISBAND = getString("cannot-disband");
         CANNOT_LEAVE = getString("cannot-leave");
+        CANNOT_COMMAND = getString("cannot-command");
+        CANNOT_UNCLAIM = getString("cannot-unclaim");
+        SHIELD = getString("shield");
 
         // raid settings
         EXPLOSION_THRESHOLD = minutesFromString(getString("explosion-threshold"));
@@ -73,6 +83,9 @@ public class Config {
         // inventory items
         RAID_ITEM_NAME = getString("raid-item.name");
         RAID_ITEM_LORE = getList("raid-item.lore");
+
+        RAID_LIST_GUI = getString("raid-list-gui");
+        RAID_GUI = getString("raid-gui");
     }
 
     /**

@@ -22,10 +22,8 @@ public class RaidGui extends Gui {
 
     public RaidGui(Raid raid, String name, int size) {
         super(name, size);
-        this.inventory = getInventory();
 
-        // We need the Raid because our items will use the data from
-        // the Raid object as its lore content.
+        this.inventory = getInventory();
         this.raid = raid;
 
         updateBorder();
@@ -41,7 +39,7 @@ public class RaidGui extends Gui {
             public void run() {
                 updateItems();
             }
-        }.runTaskTimer(RaidTimers.getInstance(), 0, 20).getTaskId();
+        }.runTaskTimerAsynchronously(RaidTimers.getInstance(), 0, 20).getTaskId();
     }
 
     public void updateFill() {

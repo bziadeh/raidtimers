@@ -1,6 +1,7 @@
 package com.cloth.inventory;
 
 import com.cloth.RaidTimers;
+import com.cryptomorin.xseries.XSound;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -48,6 +49,7 @@ public abstract class Gui implements Listener {
 
     public void open(Player player) {
         player.openInventory(inventory);
+        XSound.BLOCK_NOTE_BLOCK_PLING.play(player);
     }
 
     abstract void updateBorder();

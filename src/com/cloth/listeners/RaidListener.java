@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Dispenser;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class RaidListener implements Listener {
 
@@ -38,19 +42,28 @@ public class RaidListener implements Listener {
     public void onDispense(BlockDispenseEvent event) {
         if(event.getItem().getType() == Material.TNT && event.getBlock().getType() == Material.DISPENSER) {
             final Block block = event.getBlock();
+
             final Faction faction = Board.getInstance().getFactionAt(new FLocation(block));
 
             if(!faction.isNormal()) {
                 return;
             }
+
+            // Remove the item from the dispenser ourselves since we are cancelling.
+            updateItems(block, event.getItem());
+
             event.setCancelled(true);
 
             BlockFace face = XBlock.getDirection(block);
-            Block front = block.getRelative(face); // get block in front of dispenser
+
+            // Get the block in front of the dispenser.
+            Block front = block.getRelative(face);
+
             Location location = front.getLocation().clone();
 
             TNTPrimed tnt = block.getWorld().spawn(location.add(0.5, 0.5, 0.5), TNTPrimed.class);
-            tnt.setMetadata("faction", new FixedMetadataValue(plugin, faction.getTag()));
+
+            tnt.setMetadata("factionId", new FixedMetadataValue(plugin, faction.getId()));
         }
     }
 
@@ -58,37 +71,29 @@ public class RaidListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         if(event.getEntityType() == EntityType.PRIMED_TNT) {
             Faction faction = Board.getInstance().getFactionAt(new FLocation(event.getLocation()));
-
-            if(!faction.isNormal()) {
+            if(!faction.isNormal())
                 return;
-            }
 
-            if(RaidTimers.getApi().hasShield(faction)) {
+            if(RaidTimers.getApi().getShield(faction) != null) {
                 event.setCancelled(true);
                 return;
             }
 
-            final TNTPrimed tnt = (TNTPrimed) event.getEntity();
-
-            if(!tnt.hasMetadata("faction")) {
+            TNTPrimed tnt = (TNTPrimed) event.getEntity();
+            if(!tnt.hasMetadata("factionId"))
                 return;
-            }
 
-            Faction attacker = Factions.getInstance().getByTag(tnt.getMetadata("faction").get(0).asString());
-
+            Faction attacker = Factions.getInstance().getFactionById(tnt.getMetadata("factionId").get(0).asString());
             if(attacker == null || !attacker.isNormal() || !faction.isNormal() || attacker.equals(faction)) {
                 return;
             }
 
             final Raid context = RaidTimers.getApi().getRaidInProgress(faction);
-
             if(context != null) {
-
                 if(!context.getAttacker().equals(attacker)) {
-                    // The faction is already being raided by someone else!
+                    event.setCancelled(true);
                     return;
                 }
-
                 context.setLastExplosion(System.currentTimeMillis());
                 return;
             }
@@ -97,4 +102,19 @@ public class RaidListener implements Listener {
         }
     }
 
+    private void updateItems(Block block, ItemStack dispensed) {
+        Dispenser dispenser = (Dispenser) block.getState();
+        Inventory inventory = dispenser.getInventory();
+        for(int i = 0; i < inventory.getSize(); i++) {
+            final ItemStack item = inventory.getItem(i);
+            if(item != null && item.getType() == dispensed.getType()) {
+                if(item.getAmount() == 1) {
+                    item.setType(Material.AIR);
+                    return;
+                }
+                item.setAmount(item.getAmount() - 1);
+                return;
+            }
+        }
+    }
 }

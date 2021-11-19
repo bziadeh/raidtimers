@@ -1,5 +1,7 @@
-package com.cloth;
+package com.cloth.api;
 
+import com.cloth.config.Config;
+import com.cloth.RaidTimers;
 import com.cloth.events.RaidEndEvent;
 import com.cloth.events.RaidStartEvent;
 import com.cloth.framework.CustomPlugin;
@@ -81,11 +83,10 @@ public class RaidApi {
 
         for(String attackerId : raids.getKeys(false)) {
             final String path = "raids." + attackerId;
-
             String defenderId = config.getString(path + ".raiding");
             long lastExplosion = config.getLong(path + ".lastExplosion");
-
-            raidList.add(new Raid(attackerId, defenderId, lastExplosion));
+            long start = config.getLong(path + ".start");
+            raidList.add(new Raid(attackerId, defenderId, lastExplosion, start));
         }
     }
 
@@ -130,6 +131,7 @@ public class RaidApi {
             String id = raid.getAttacker().getId();
             config.set("raids." + id + ".raiding", raid.getDefender().getId());
             config.set("raids." + id + ".lastExplosion", raid.getLastExplosion());
+            config.set("raids." + id + ".start", raid.getStart());
             try {
                 config.save(file);
             } catch (IOException e) {
@@ -209,18 +211,18 @@ public class RaidApi {
     }
 
     /**
-     * Checks if the specified faction has a shield.
+     * Gets the shield for the specified faction. Null if it does not exist.
      *
-     * @param faction the faction being checked.
-     * @return whether it has an active shield.
+     * @param faction the faction with whose shield you are getting.
+     * @return the shield.
      */
-    public boolean hasShield(Faction faction) {
+    public Shield getShield(Faction faction) {
         for(Shield shield : shieldList) {
             if(shield.getFaction().equals(faction)) {
-                return true;
+                return shield;
             }
         }
-        return false;
+        return null;
     }
 
     /**
